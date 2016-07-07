@@ -1,14 +1,16 @@
 module.exports = {
-  entity: 'Ticket',
-  group: [{
-    field: '@id',
-    method: 'enum'
-  }],
-  params: {
-    'active': {
-      aggregator: "sum",
-      filter: ['state = processing'],
-      meta: ["destination", "@id", "service"]
-    }
-  }
+	entity: 'Ticket',
+	params: {
+		'time': {
+			aggregator: "sum",
+			key: "waitingTime",
+			filter: ['waitingTime > 0'],
+			transform: ['waiting-time']
+		},
+		'count': {
+			aggregator: "count",
+			filter: ['waitingTime > 0'],
+			transform: ['waiting-time']
+		}
+	}
 };
