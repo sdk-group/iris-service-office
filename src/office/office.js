@@ -6,6 +6,7 @@ let emitter = require("global-queue");
 let patchwerk = require('patchwerk')(emitter);
 
 let template = require('./tickets-template.js');
+const notification_interval = 15000;
 
 class Office {
 	constructor() {
@@ -13,8 +14,6 @@ class Office {
 		this.offices = {};
 	}
 	init(config) {
-		console.log('subscribe');
-
 		this.emitter.on('ticket.emit.state', ({
 			ticket,
 			org_addr,
@@ -24,32 +23,41 @@ class Office {
 			let to_join = ['ticket', event_name, org_addr, workstation];
 			if (event_name == 'call') this.processCall(ticket, org_addr)
 		});
+
+		setInterval(() => this.notifyStatusChange(), notification_interval);
+
 		return true;
 	}
 	processCall(ticket, org_addr) {
 		console.log('processCall');
-		let history = ticket.history;
-		let calls = _.filter(history, ['event_name', 'call']);
-
-		if (calls.length > 1) return false;
-
-		let first_called = _.head(calls);
-		let registered = _.find(history, ['event_name', 'register']) || _.find(history, ['event_name', 'activate']);
 
 		this.getInitialValues(org_addr).then((rebuild) => {
-			if (rebuild) return;
+			if (rebuild) return true;
+
+			let history = ticket.history;
+			let calls = _.filter(history, ['event_name', 'call']);
+
+			if (calls.length > 1) return false;
+
+			let first_called = _.head(calls);
+			let registered = _.find(history, ['event_name', 'register']) || _.find(history, ['event_name', 'activate']);
+
 			this.offices[org_addr].count++;
 			this.offices[org_addr].total += ((first_called.time - registered.time) / 1000);
-
-		}).then(() => {
+			this.offices[org_addr].updated = true;
+		});
+	}
+	notifyStatusChange() {
+		_.forEach(this.offices, (organization, org_addr) => {
 			this.emitter.emit('broadcast', {
 				event: _.join(['office.average-waiting-time', org_addr], "."),
 				data: {
-					value: (this.offices[org_addr].total / this.offices[org_addr].count)
+					value: (organization.total / organization.count)
 				}
 			});
-		})
 
+			organization.updated = false;
+		});
 	}
 	getInitialValues(org_addr) {
 		let now = moment().format('YYYY-MM-DD');
@@ -65,6 +73,7 @@ class Office {
 		}).then(r => {
 			this.offices[org_addr] = {
 				date: now,
+				updated: true,
 				total: r.nogroup['time'] / 1000,
 				count: r.nogroup['count']
 			};
