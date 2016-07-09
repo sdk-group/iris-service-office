@@ -21,11 +21,11 @@ class AverageWaitingTime extends BasicParam {
 		return template;
 	}
 	update(response) {
-		this.data = {
-			total: response.nogroup['time'] / 1000,
-			count: response.nogroup['count'],
-			value: response.nogroup['time'] / 1000 / response.nogroup['count']
-		}
+		this.data = this.canUpdate(response) ? {
+			total: response['time'] / 1000,
+			count: response['count'],
+			value: response['time'] / 1000 / response['count']
+		} : {}
 	}
 	get value() {
 		return this.data.value;

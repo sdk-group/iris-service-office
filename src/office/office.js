@@ -60,7 +60,7 @@ class Office {
 		return this.emitter.addTask('reports', {
 			_action: 'get-table',
 			table: template
-		}).then(response => _.forEach(to_update, param => param.update(response)))
+		}).then(report => _.forEach(to_update, param => param.update(report.nogroup)))
 	}
 	sendNotifications(params) {
 		_.forEach(params, param => {

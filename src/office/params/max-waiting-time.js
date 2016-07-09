@@ -16,9 +16,9 @@ class MaxWaitingTime extends BasicParam {
 		return template;
 	}
 	update(response) {
-		this.data = {
-			value: response.nogroup['max']
-		}
+		this.data = this.canUpdate(response) ? {
+			value: response['max']
+		} : {};
 	}
 	get value() {
 		return this.data.value;
