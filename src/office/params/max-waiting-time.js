@@ -6,7 +6,7 @@ let template = {
 	'max': {
 		aggregator: "maxTimeInSeconds",
 		key: "waitingTime",
-		filter: ['waitingTime > 0', 'state = registered'],
+		filter: ['waitingTime > 0', 'state = registered', '!hasEventPostpone'],
 		transform: ['waiting-time']
 	}
 };
@@ -21,7 +21,7 @@ class MaxWaitingTime extends BasicParam {
 		} : {};
 	}
 	get value() {
-		return this.data.value;
+		return this.data.value || 0;
 	}
 }
 
