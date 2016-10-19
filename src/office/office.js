@@ -22,14 +22,14 @@ class Office {
 			workstation,
 			event_name
 		}) => {
-			if (!this.offices[org_addr]) this.offices[org_addr] = [new AverageWaitingTime(org_addr), new MaxWaitingTime(org_addr)];
+			// if (!this.offices[org_addr]) this.offices[org_addr] = [new AverageWaitingTime(org_addr), new MaxWaitingTime(org_addr)];
+			if (!this.offices[org_addr]) this.offices[org_addr] = [new MaxWaitingTime(org_addr)];
 		});
 
 		setInterval(() => this.notifyStatusChange(), notification_interval);
 
 		return true;
 	}
-
 	notifyStatusChange() {
 		_.forEach(this.offices, (params, org_addr) => {
 			let to_update = _.filter(params, param => !param.isFresh());
@@ -41,9 +41,7 @@ class Office {
 			let template = this.makeTemplate(query_params, org_addr);
 
 			//@NOTE: use async/await here in future ... or not
-			this.updateParams(template, to_update).then(() => {
-				this.sendNotifications(params)
-			})
+			this.updateParams(template, to_update).then(() => this.sendNotifications(params));
 		});
 	}
 	makeTemplate(query_params, org_addr) {
@@ -75,11 +73,6 @@ class Office {
 		});
 	}
 	launch() {
-
-		// return patchwerk.get('organization-structure', {}).then(d => {
-		// 	console.log(_.map(_.filter(d.content, (o) => !o.unit_of), '@id'));
-		// 	return true;
-		// })
 		return Promise.resolve(true);
 	}
 }
