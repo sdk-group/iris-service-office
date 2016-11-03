@@ -9,6 +9,7 @@ let tasks = [];
 
 module.exports = {
 	module: require('./office.js'),
+	name: 'office',
 	permissions: [],
 	tasks: tasks,
 	exposed: true,
