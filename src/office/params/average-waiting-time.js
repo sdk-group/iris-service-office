@@ -30,6 +30,9 @@ class AverageWaitingTime extends BasicParam {
 	get value() {
 		return this.data.value;
 	}
+	get paramName() {
+		return 'AverageWaitingTime';
+	}
 }
 
 

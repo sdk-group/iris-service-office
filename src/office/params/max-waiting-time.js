@@ -23,6 +23,10 @@ class MaxWaitingTime extends BasicParam {
 	get value() {
 		return this.data.value || 0;
 	}
+
+	get paramName() {
+		return 'MaxWaitingTime';
+	}
 }
 
 

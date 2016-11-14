@@ -41,11 +41,13 @@ class Office {
 			let template = this.makeTemplate(query_params, org_addr);
 
 			//@NOTE: use async/await here in future ... or not
-			this.updateParams(template, to_update).then(() => this.sendNotifications(params));
+			this.updateParams(template, to_update)
+				.then(() => this.sendNotifications(params));
 		});
 	}
 	makeTemplate(query_params, org_addr) {
-		let now = moment().format('YYYY-MM-DD');
+		let now = moment()
+			.format('YYYY-MM-DD');
 		let template = {
 			entity: 'Ticket',
 			interval: [now, now],
@@ -56,14 +58,15 @@ class Office {
 	}
 	updateParams(template, to_update) {
 		return this.emitter.addTask('reports', {
-			_action: 'get-table',
-			table: template
-		}).then(report => _.forEach(to_update, param => param.update(report.nogroup)))
+				_action: 'get-table',
+				table: template
+			})
+			.then(report => _.forEach(to_update, param => param.update(report.nogroup)))
 	}
 	sendNotifications(params) {
 		_.forEach(params, param => {
 			let broadcast_data = {
-				event: _.join(['office', _.kebabCase(param.constructor.name), param.org_addr], "."),
+				event: _.join(['office', _.kebabCase(param.paramName), param.org_addr], "."),
 				data: {
 					value: param.value
 				}
