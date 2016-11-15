@@ -45,10 +45,9 @@ class Office {
 		});
 	}
 	makeTemplate(query_params, org_addr) {
-		let now = moment().format('YYYY-MM-DD');
 		let template = {
 			entity: 'Ticket',
-			interval: [now, now],
+			interval: 'now',
 			department: org_addr.split('.')[1],
 			params: query_params
 		};
